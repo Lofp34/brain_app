@@ -263,7 +263,9 @@ export const MathGameScreen = () => {
                 <form onSubmit={handleSubmit} className="w-full max-w-xs">
                     <input
                         ref={inputRef}
-                        type="number"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         autoFocus
                         value={inputValue}
                         onChange={(e) => setInputValue(e.target.value)}
