@@ -9,16 +9,31 @@ class HttpError extends Error {
   }
 }
 
+let cachedJwtSecret
+
+const deriveSecretFromDatabaseUrl = (databaseUrl) =>
+  crypto.createHash('sha256').update(databaseUrl).digest('hex')
+
 const requireJwtSecret = () => {
+  if (cachedJwtSecret) return cachedJwtSecret
+
   const secret = process.env.AUTH_SECRET || process.env.STACK_SECRET_SERVER_KEY
-  if (!secret) {
-    throw new HttpError(
-      500,
-      'Server misconfigured: missing AUTH_SECRET (or STACK_SECRET_SERVER_KEY) environment variable.',
-      'MISSING_AUTH_SECRET'
-    )
+  if (secret) {
+    cachedJwtSecret = secret
+    return cachedJwtSecret
   }
-  return secret
+
+  if (process.env.DATABASE_URL) {
+    cachedJwtSecret = deriveSecretFromDatabaseUrl(process.env.DATABASE_URL)
+    console.warn('AUTH_SECRET/STACK_SECRET_SERVER_KEY missing; using DATABASE_URL-derived secret.')
+    return cachedJwtSecret
+  }
+
+  throw new HttpError(
+    500,
+    'Server misconfigured: missing AUTH_SECRET (or STACK_SECRET_SERVER_KEY) environment variable.',
+    'MISSING_AUTH_SECRET'
+  )
 }
 
 export const parseBody = (req) => {
