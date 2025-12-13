@@ -9,7 +9,6 @@ interface WheelPickerProps {
 }
 
 const ITEM_HEIGHT = 48; // px
-const VISIBLE_ITEMS = 5;
 
 export const WheelPicker: React.FC<WheelPickerProps> = ({ min, max, value, onChange, label }) => {
     const range = Array.from({ length: max - min + 1 }, (_, i) => min + i);
