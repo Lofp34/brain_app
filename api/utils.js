@@ -10,9 +10,13 @@ class HttpError extends Error {
 }
 
 const requireJwtSecret = () => {
-  const secret = process.env.AUTH_SECRET
+  const secret = process.env.AUTH_SECRET || process.env.STACK_SECRET_SERVER_KEY
   if (!secret) {
-    throw new HttpError(500, 'Server misconfigured: missing AUTH_SECRET environment variable.', 'MISSING_AUTH_SECRET')
+    throw new HttpError(
+      500,
+      'Server misconfigured: missing AUTH_SECRET (or STACK_SECRET_SERVER_KEY) environment variable.',
+      'MISSING_AUTH_SECRET'
+    )
   }
   return secret
 }
@@ -64,7 +68,7 @@ export const withErrorHandling = (handler) => async (req, res) => {
     let message = 'Internal server error.'
 
     if (error.code === 'MISSING_AUTH_SECRET') {
-      message = 'Server configuration error: AUTH_SECRET is missing.'
+      message = 'Server configuration error: set AUTH_SECRET or STACK_SECRET_SERVER_KEY.'
     } else if (error.code === 'MISSING_DATABASE_URL') {
       message = 'Server configuration error: DATABASE_URL is missing.'
     } else if (error.code === 'INVALID_JSON') {
