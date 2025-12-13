@@ -1,7 +1,7 @@
 import { ensureSchema, sql } from './db.js'
-import { createToken, parseBody, verifyPassword } from './utils.js'
+import { createToken, parseBody, verifyPassword, withErrorHandling } from './utils.js'
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' })
     return
@@ -34,3 +34,5 @@ export default async function handler(req, res) {
 
   res.status(200).json({ token, profile: rest, sessions })
 }
+
+export default withErrorHandling(handler)

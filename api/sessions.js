@@ -1,8 +1,8 @@
 import crypto from 'node:crypto'
 import { ensureSchema, sql } from './db.js'
-import { parseBody, verifyToken } from './utils.js'
+import { parseBody, verifyToken, withErrorHandling } from './utils.js'
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   await ensureSchema()
 
   const authHeader = req.headers.authorization
@@ -45,3 +45,5 @@ export default async function handler(req, res) {
 
   res.status(405).json({ error: 'Method not allowed' })
 }
+
+export default withErrorHandling(handler)

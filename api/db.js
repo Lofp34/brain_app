@@ -1,14 +1,26 @@
-import { neon } from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless'
+import { HttpError } from './utils.js'
 
-const connectionString = process.env.DATABASE_URL;
+let sqlClient = null
 
-if (!connectionString) {
-  throw new Error('DATABASE_URL is not set. Configure the Neon connection string in your Vercel environment.');
+const getSqlClient = () => {
+  if (!sqlClient) {
+    const connectionString = process.env.DATABASE_URL
+    if (!connectionString) {
+      throw new HttpError(
+        500,
+        'Server misconfigured: missing DATABASE_URL environment variable.',
+        'MISSING_DATABASE_URL',
+      )
+    }
+    sqlClient = neon(connectionString)
+  }
+  return sqlClient
 }
 
-export const sql = neon(connectionString);
+export const sql = (...args) => getSqlClient()(...args)
 
-let schemaPromise = null;
+let schemaPromise = null
 
 export const ensureSchema = async () => {
   if (!schemaPromise) {
@@ -37,5 +49,5 @@ export const ensureSchema = async () => {
     })();
   }
 
-  return schemaPromise;
-};
+  return schemaPromise
+}
