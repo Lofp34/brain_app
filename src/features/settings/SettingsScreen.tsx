@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, LogOut, Save, Trash2 } from 'lucide-react';
 
 export const SettingsScreen = () => {
     const navigate = useNavigate();
@@ -28,6 +28,11 @@ export const SettingsScreen = () => {
             resetProfile();
             navigate('/'); // Will redirect to onboarding
         }
+    };
+
+    const handleLogout = () => {
+        resetProfile();
+        navigate('/');
     };
 
     return (
@@ -62,6 +67,15 @@ export const SettingsScreen = () => {
                     </div>
                     <Button onClick={handleSave} className="w-full">
                         <Save className="mr-2" size={18} /> Save Key
+                    </Button>
+                </section>
+
+                {/* Account */}
+                <section className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                    <h2 className="text-lg font-bold text-gray-900">Account</h2>
+                    <p className="text-sm text-gray-500">Sign out of your account and return to onboarding.</p>
+                    <Button variant="secondary" className="w-full" onClick={handleLogout}>
+                        <LogOut className="mr-2" size={18} /> Log out
                     </Button>
                 </section>
 
