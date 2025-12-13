@@ -5,19 +5,32 @@ import { Input } from '../../components/ui/Input';
 import { Brain } from 'lucide-react';
 
 export const OnboardingScreen = () => {
-    const { createProfile } = useUser();
+    const { createProfile, login } = useUser();
+    const [mode, setMode] = useState<'register' | 'login'>('register');
     const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
+    const handleStart = async () => {
+        setError(null);
+        if (mode === 'register' && !name.trim()) return;
+        if (!email.trim() || !password.trim()) return;
 
-    const handleStart = () => {
-        if (!name.trim()) return;
-        createProfile(name, {
-            theme: 'system',
-            soundEnabled: true,
-            mathDuration: 5,
-            mathDifficulty: 'medium',
-            memoryCardCount: 12
-        });
+        try {
+            setIsSubmitting(true);
+            if (mode === 'register') {
+                await createProfile(name, email, password);
+            } else {
+                await login(email, password);
+            }
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Unable to continue.';
+            setError(message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -34,7 +47,12 @@ export const OnboardingScreen = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <div className="space-y-4">
+                    {error && (
+                        <div className="text-red-600 bg-red-50 border border-red-100 rounded-xl p-3 text-sm">
+                            {error}
+                        </div>
+                    )}
+                    {mode === 'register' && (
                         <Input
                             label="What should we call you?"
                             placeholder="Enter your name"
@@ -42,16 +60,40 @@ export const OnboardingScreen = () => {
                             onChange={(e) => setName(e.target.value)}
                             autoFocus
                         />
-                    </div>
+                    )}
+                    <Input
+                        label="Email"
+                        type="email"
+                        placeholder="you@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <Input
+                        label="Password"
+                        type="password"
+                        placeholder="********"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
 
                     <Button
                         className="w-full"
                         size="lg"
                         onClick={handleStart}
-                        disabled={!name.trim()}
+                        disabled={isSubmitting || (mode === 'register' ? !name.trim() : false) || !email.trim() || !password.trim()}
                     >
-                        Start Training
+                        {isSubmitting ? 'Please wait...' : mode === 'register' ? 'Create account' : 'Sign in'}
                     </Button>
+
+                    <div className="text-center text-sm text-gray-500">
+                        {mode === 'register' ? 'Already have an account?' : "New here?"}{' '}
+                        <button
+                            onClick={() => setMode(mode === 'register' ? 'login' : 'register')}
+                            className="text-primary-600 font-semibold hover:underline"
+                        >
+                            {mode === 'register' ? 'Sign in' : 'Create one'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -45,7 +45,7 @@ export interface GameSession {
     duration?: number; // seconds
     score: number;
     mistakes: number;
-    details: any; // MathSessionDetails | MemorySessionDetails
+    details: MathSessionDetails | MemorySessionDetails | Record<string, unknown>;
 }
 
 export interface MathSessionDetails {

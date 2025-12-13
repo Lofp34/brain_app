@@ -13,12 +13,13 @@ export const SettingsScreen = () => {
 
     useEffect(() => {
         if (profile?.settings.openAIKey) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setApiKey(profile.settings.openAIKey);
         }
     }, [profile]);
 
-    const handleSave = () => {
-        updateSettings({ openAIKey: apiKey });
+    const handleSave = async () => {
+        await updateSettings({ openAIKey: apiKey });
         alert('Settings saved!');
     };
 
