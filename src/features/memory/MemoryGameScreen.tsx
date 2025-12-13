@@ -108,6 +108,7 @@ export const MemoryGameScreen = () => {
     // Win Checker
     useEffect(() => {
         if (gameState === 'playing' && matchedPairs > 0 && matchedPairs === cardCount / 2) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             finishGame();
         }
     }, [matchedPairs, cardCount, gameState, finishGame]);

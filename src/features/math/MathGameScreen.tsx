@@ -34,6 +34,7 @@ export const MathGameScreen = () => {
 
     useEffect(() => {
         if (gameState === 'finished' && !feedback && profile?.settings.openAIKey) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsLoadingFeedback(true);
             AIService.getCoachFeedback(profile.settings.openAIKey, score, mistakes, 'math')
                 .then(f => setFeedback(f))
