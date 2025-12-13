@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import { Button } from '../../components/ui/Button';
 import { WheelPicker } from '../../components/ui/WheelPicker';
 import { MathEngine } from './mathEngine';
 import type { MathQuestion, MathDifficulty, GameSession } from '../../types';
-import { StorageService } from '../../services/storage';
 import { AIService } from '../../services/ai';
 import { ArrowLeft, Clock, RotateCcw, Play } from 'lucide-react';
 
@@ -13,7 +12,7 @@ type GameState = 'config' | 'playing' | 'finished';
 
 export const MathGameScreen = () => {
     const navigate = useNavigate();
-    const { profile } = useUser();
+    const { profile, addSession } = useUser();
 
     // Config State
     const [gameState, setGameState] = useState<GameState>('config');
@@ -59,6 +58,8 @@ export const MathGameScreen = () => {
         setInputValue('');
     }, [difficulty]);
 
+    const inputRef = useRef<HTMLInputElement>(null);
+
     const handleSubmit = (e?: React.FormEvent) => {
         e?.preventDefault();
         if (!currentQuestion) return;
@@ -75,6 +76,11 @@ export const MathGameScreen = () => {
         }
         setQuestionsAnswered(q => q + 1);
         nextQuestion();
+
+        // Keep focus
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 0);
     };
 
     const finishGame = useCallback(() => {
@@ -93,8 +99,8 @@ export const MathGameScreen = () => {
                 averageTimePerQuestion: 0 // TODO: implement tracking
             }
         };
-        StorageService.saveSession(session);
-    }, [score, mistakes, startTime, questionsAnswered]);
+        addSession(session);
+    }, [score, mistakes, startTime, questionsAnswered, addSession]);
 
     // Timer
     useEffect(() => {
@@ -243,6 +249,7 @@ export const MathGameScreen = () => {
 
                 <form onSubmit={handleSubmit} className="w-full max-w-xs">
                     <input
+                        ref={inputRef}
                         type="number"
                         autoFocus
                         value={inputValue}

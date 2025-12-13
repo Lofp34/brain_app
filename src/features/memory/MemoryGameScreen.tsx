@@ -4,7 +4,6 @@ import { useUser } from '../../contexts/UserContext';
 import { Button } from '../../components/ui/Button';
 import { MemoryEngine, type MemoryCard } from './memoryEngine';
 import type { GameSession } from '../../types';
-import { StorageService } from '../../services/storage';
 import { ArrowLeft, Clock, RotateCcw, Play, BrainCircuit } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -12,7 +11,7 @@ type GameState = 'config' | 'playing' | 'finished';
 
 export const MemoryGameScreen = () => {
     const navigate = useNavigate();
-    const { profile } = useUser();
+    const { profile, addSession } = useUser();
 
     // Config
     const [gameState, setGameState] = useState<GameState>('config');
@@ -103,8 +102,8 @@ export const MemoryGameScreen = () => {
                 pairsFound: cardCount / 2
             }
         };
-        StorageService.saveSession(session);
-    }, [cardCount, moves, startTime]);
+        addSession(session);
+    }, [cardCount, moves, startTime, addSession]);
 
     // Win Checker
     useEffect(() => {

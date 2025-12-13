@@ -8,6 +8,7 @@ interface UserContextType {
     updateSettings: (settings: Partial<UserSettings>) => void;
     createProfile: (name: string, initialSettings: UserSettings) => void;
     resetProfile: () => void;
+    addSession: (session: import('../types').GameSession) => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -57,8 +58,55 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile(null);
     };
 
+    const addSession = (session: import('../types').GameSession) => {
+        if (!profile) return;
+
+        // 1. Save session
+        StorageService.saveSession(session);
+
+        // 2. Update Stats
+        const now = new Date();
+        const lastPlayed = profile.stats.lastPlayedAt ? new Date(profile.stats.lastPlayedAt) : null;
+
+        let newStreak = profile.stats.currentStreak;
+        if (lastPlayed) {
+            const isSameDay = now.getDate() === lastPlayed.getDate() &&
+                now.getMonth() === lastPlayed.getMonth() &&
+                now.getFullYear() === lastPlayed.getFullYear();
+
+            if (!isSameDay) {
+                const yesterday = new Date(now);
+                yesterday.setDate(now.getDate() - 1);
+                const playedYesterday = yesterday.getDate() === lastPlayed.getDate() &&
+                    yesterday.getMonth() === lastPlayed.getMonth() &&
+                    yesterday.getFullYear() === lastPlayed.getFullYear();
+
+                if (playedYesterday) {
+                    newStreak += 1;
+                } else {
+                    newStreak = 1;
+                }
+            }
+        } else {
+            newStreak = 1;
+        }
+
+        const updatedProfile: UserProfile = {
+            ...profile,
+            stats: {
+                ...profile.stats,
+                totalSessions: profile.stats.totalSessions + 1,
+                currentStreak: newStreak,
+                lastPlayedAt: now.toISOString(),
+            }
+        };
+
+        setProfile(updatedProfile);
+        StorageService.saveUserProfile(updatedProfile);
+    };
+
     return (
-        <UserContext.Provider value={{ profile, isLoading, updateSettings, createProfile, resetProfile }}>
+        <UserContext.Provider value={{ profile, isLoading, updateSettings, createProfile, resetProfile, addSession }}>
             {children}
         </UserContext.Provider>
     );
