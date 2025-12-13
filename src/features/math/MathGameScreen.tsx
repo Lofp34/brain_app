@@ -224,14 +224,26 @@ export const MathGameScreen = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             {/* Game Header */}
-            <div className="bg-white p-4 shadow-sm flex justify-between items-center">
-                <Button variant="ghost" onClick={() => setGameState('config')} className="text-gray-500">Stop</Button>
-                <div className="flex items-center space-x-2 text-xl font-mono font-bold text-gray-700">
-                    <Clock size={24} />
-                    <span>{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
+            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50 p-4 flex justify-between items-center shadow-sm supports-[backdrop-filter]:bg-white/60">
+                <Button
+                    variant="ghost"
+                    onClick={() => setGameState('config')}
+                    className="text-gray-500 hover:text-red-500 hover:bg-red-50"
+                    size="sm"
+                >
+                    Stop
+                </Button>
+
+                <div className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-2 bg-gray-100/50 px-4 py-1.5 rounded-full border border-gray-200/50">
+                    <Clock size={16} className="text-gray-400" />
+                    <span className="font-mono text-lg font-bold text-gray-700 tabular-nums">
+                        {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                    </span>
                 </div>
-                <div className="text-sm font-medium bg-primary-50 text-primary-700 px-3 py-1 rounded-full">
-                    Score: {score}
+
+                <div className="flex items-center space-x-1 bg-green-50 text-green-700 px-3 py-1.5 rounded-full border border-green-100">
+                    <span className="text-xs font-bold uppercase tracking-wider text-green-600/70">Score</span>
+                    <span className="font-bold tabular-nums">{score}</span>
                 </div>
             </div>
 
