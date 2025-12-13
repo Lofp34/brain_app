@@ -3,13 +3,11 @@ interface RequestOptions extends RequestInit {
 }
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        ...(options.headers || {})
-    };
+    const headers = new Headers(options.headers as HeadersInit);
+    headers.set('Content-Type', 'application/json');
 
     if (options.token) {
-        headers.Authorization = `Bearer ${options.token}`;
+        headers.set('Authorization', `Bearer ${options.token}`);
     }
 
     const response = await fetch(path, {
