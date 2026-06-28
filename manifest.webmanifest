@@ -1,0 +1,10 @@
+{
+  "name": "FocusWord — Lecture mot par mot",
+  "short_name": "FocusWord",
+  "description": "Lecteur RSVP avec ORP, import PDF local et rythme adaptatif.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#08090d",
+  "theme_color": "#ff7a1a",
+  "icons": []
+}
