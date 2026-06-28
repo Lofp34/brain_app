@@ -1,13 +1,111 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>brain-app</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>FocusWord — Lecture mot par mot</title>
+    <meta name="description" content="Application de lecture ultra focus en affichage mot par mot avec ORP, rythme adaptatif et import PDF local." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script defer src="./app.js"></script>
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+  <body data-theme="deep">
+    <div class="grain" aria-hidden="true"></div>
+    <main id="app" class="app-shell">
+      <section class="hero" aria-labelledby="app-title">
+        <div>
+          <p class="eyebrow">Focus maximum · RSVP · ORP</p>
+          <h1 id="app-title">FocusWord</h1>
+          <p class="hero-copy">Lecture mot par mot, pause intelligente à la ponctuation, repère visuel de fixation et import PDF local. Pensé pour lire dense, vite, sans dispersion.</p>
+        </div>
+        <div class="hero-card">
+          <span id="sourceName">Texte chargé</span>
+          <strong id="remainingTime">0 min</strong>
+          <small>temps restant estimé</small>
+        </div>
+      </section>
+
+      <section class="reader-card" aria-label="Lecteur mot par mot">
+        <div id="focusAura" class="focus-aura" aria-hidden="true"></div>
+        <div class="stage" aria-live="polite" aria-atomic="true">
+          <span id="ghostLeft" class="ghost ghost-left"></span>
+          <div id="word" class="word-display"></div>
+          <span id="ghostRight" class="ghost ghost-right"></span>
+        </div>
+        <div id="contextLine" class="context-line" aria-label="Contexte autour du mot courant"></div>
+        <div class="progress-row">
+          <input id="progressRange" type="range" min="0" max="1" value="0" aria-label="Progression de lecture" />
+          <span id="progressLabel">0%</span>
+        </div>
+        <div class="stats" aria-label="Statistiques de lecture">
+          <span><strong id="wordsRead">0</strong> lus</span>
+          <span><strong id="wordsTotal">0</strong> mots</span>
+          <span>raccourcis : espace · ← → · ↑ ↓ · F · T</span>
+        </div>
+      </section>
+
+      <section class="controls-grid" aria-label="Contrôles de lecture">
+        <div class="panel playback-panel">
+          <div class="button-row">
+            <button id="playToggle" class="primary" type="button" aria-pressed="false">Lecture</button>
+            <button id="backButton" type="button">−30</button>
+            <button id="forwardButton" type="button">+30</button>
+            <button id="restartButton" type="button">Début</button>
+            <button id="fullscreenButton" type="button">Plein écran</button>
+          </div>
+          <p id="status" class="status">Prêt.</p>
+        </div>
+
+        <div class="panel tuning-panel">
+          <label>
+            <span>Vitesse <b id="wpmValue">360 m/min</b></span>
+            <input id="wpmRange" type="range" min="120" max="900" step="10" value="360" />
+          </label>
+          <label>
+            <span>Groupe <b id="chunkValue">1 mot</b></span>
+            <input id="chunkRange" type="range" min="1" max="4" step="1" value="1" />
+          </label>
+          <label>
+            <span>Taille <b id="fontValue">104px</b></span>
+            <input id="fontRange" type="range" min="58" max="168" step="2" value="104" />
+          </label>
+          <label>
+            <span>Respiration ponctuation <b id="pauseValue">135%</b></span>
+            <input id="pauseRange" type="range" min="40" max="230" step="5" value="135" />
+          </label>
+          <label>
+            <span>Ambiance</span>
+            <select id="themeSelect">
+              <option value="deep">Deep focus</option>
+              <option value="paper">Papier calme</option>
+              <option value="contrast">Contraste extrême</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="source-grid" aria-label="Source du texte">
+        <div class="panel import-panel">
+          <h2>Importer le texte</h2>
+          <div id="dropZone" class="drop-zone">
+            <input id="fileInput" type="file" accept=".txt,.md,.pdf,text/plain,application/pdf" />
+            <strong>Dépose un PDF ou un fichier texte</strong>
+            <span>L’extraction PDF se fait dans ton navigateur : le fichier n’est pas envoyé sur un serveur.</span>
+          </div>
+          <textarea id="pasteArea" placeholder="Colle ici un texte, un chapitre, une note, un script de vente, puis clique sur Charger."></textarea>
+          <div class="button-row compact">
+            <button id="loadPasteButton" type="button">Charger le texte collé</button>
+            <button id="loadSampleButton" type="button">Recharger l’extrait test</button>
+          </div>
+        </div>
+
+        <aside class="panel chapters-panel" aria-label="Sections détectées">
+          <h2>Navigation rapide</h2>
+          <div id="chapters" class="chapters"></div>
+        </aside>
+      </section>
+    </main>
   </body>
 </html>
