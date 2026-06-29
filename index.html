@@ -29,7 +29,7 @@
 
       <section class="reader-card" aria-label="Lecteur mot par mot">
         <div id="focusAura" class="focus-aura" aria-hidden="true"></div>
-        <div class="stage" aria-live="polite" aria-atomic="true">
+        <div class="stage" aria-live="polite" aria-atomic="true" title="Cliquer sur le mot pour mettre en pause">
           <span id="ghostLeft" class="ghost ghost-left"></span>
           <div id="word" class="word-display"></div>
           <span id="ghostRight" class="ghost ghost-right"></span>
@@ -42,7 +42,7 @@
         <div class="stats" aria-label="Statistiques de lecture">
           <span><strong id="wordsRead">0</strong> lus</span>
           <span><strong id="wordsTotal">0</strong> mots</span>
-          <span>raccourcis : espace · ← → · ↑ ↓ · F · T</span>
+          <span>raccourcis : espace · clic sur le mot = pause · ← → · ↑ ↓ · F · T</span>
         </div>
       </section>
 
@@ -107,5 +107,18 @@
         </aside>
       </section>
     </main>
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const stage = document.querySelector('.stage');
+        const playToggle = document.getElementById('playToggle');
+        if (!stage || !playToggle) return;
+
+        stage.style.cursor = 'pointer';
+        stage.addEventListener('click', () => {
+          const isReading = playToggle.getAttribute('aria-pressed') === 'true';
+          if (isReading) playToggle.click();
+        });
+      });
+    </script>
   </body>
 </html>
